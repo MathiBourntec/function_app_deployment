@@ -16,7 +16,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # Serve index.html as the default
     if not path or path.endswith('/'):
         try:
-            with open(os.path.join(os.path.dirname(__file__), "index.html"), "r") as f:
+            # Adjust path to index.html
+            index_html_path = os.path.join(os.path.dirname(__file__), "index.html")
+            with open(index_html_path, "r") as f:
                 html_content = f.read()
             return func.HttpResponse(html_content, mimetype="text/html")
         except FileNotFoundError:
@@ -24,9 +26,9 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     # Handle static files (CSS, JS, etc.)
     elif path.startswith("static/"):
-        # Remove the leading "static/" from the path
+        # Adjust path to static files
         relative_path = path[len("static/"):]
-        static_file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static", relative_path)
+        static_file_path = os.path.join(os.path.dirname(__file__), "static", relative_path)
 
         if os.path.exists(static_file_path):
             try:
@@ -37,7 +39,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
                     elif path.endswith(".js"):
                         mimetype = "application/javascript"
                     else:
-                        mimetype = "application/octet-stream"
+                        mimetype = "application/octet-stream"  # Default binary file type
                     return func.HttpResponse(content, mimetype=mimetype)
             except Exception as e:
                 logging.error(f"Error serving static file: {e}")
